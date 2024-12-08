@@ -1,0 +1,75 @@
+#include <iostream>
+#include <conio.h> 
+#include <cstdlib> 
+#include <ctime>   
+using namespace std;
+
+const int roadWidth = 20; 
+const int roadHeight = 15; 
+int playerPosition = roadWidth / 2; 
+int score = 0;
+
+void drawRoad(char road[][roadWidth]) {
+    system("cls"); 
+    for (int i = 0; i < roadHeight; ++i) {
+        for (int j = 0; j < roadWidth; ++j) {
+            cout << road[i][j];
+        }
+        cout << endl;
+    }
+    cout << "Score: " << score << endl;
+    cout << "Use 'a' to move left, 'd' to move right." << endl;
+}
+
+void updateRoad(char road[][roadWidth]) {
+    for (int i = 0; i < roadHeight - 1; ++i) {
+        for (int j = 0; j < roadWidth; ++j) {
+            road[i][j] = road[i + 1][j];
+        }
+    }
+    for (int j = 0; j < roadWidth; ++j) {
+        road[roadHeight - 1][j] = ' ';
+    }
+
+    int obstacleCount = rand() % 3 + 1; 
+    for (int i = 0; i < obstacleCount; ++i) {
+        road[roadHeight - 1][rand() % roadWidth] = '#';
+    }
+}
+bool checkCollision(char road[][roadWidth]) {
+    return road[roadHeight - 2][playerPosition] == '#';
+}
+void movePlayer(char input) {
+    if (input == 'a' && playerPosition > 0) {
+        playerPosition--;
+    } else if (input == 'd' && playerPosition < roadWidth - 1) {
+        playerPosition++;
+    }
+}
+int main() {
+    srand(static_cast<unsigned int>(time(0))); 
+    char road[roadHeight][roadWidth];
+    for (int i = 0; i < roadHeight; ++i) {
+        for (int j = 0; j < roadWidth; ++j) {
+            road[i][j] = ' ';
+        }
+    }
+
+    while (true) {
+    
+        road[roadHeight - 2][playerPosition] = 'A';
+        drawRoad(road);
+        if (checkCollision(road)) {
+            cout << "Game Over! Final Score: " << score << endl;
+            break;
+        }
+        updateRoad(road);
+        score++;
+        if (_kbhit()) {
+            char input = _getch();
+            movePlayer(input);
+        }
+        _sleep(200); 
+    }
+    return 0;
+}
